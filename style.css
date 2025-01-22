@@ -10,3 +10,60 @@ canvas {
   height: 100vh;
   margin: 0 auto;
 }
+
+#registration-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+#registration-form input,
+#registration-form select {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    width: 200px;
+}
+
+#registration-form button {
+    background: #00bbc4;
+    border: none;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#registration-form button:hover {
+    background: #009aa1;
+}
+
+.button-container {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    margin-top: 20px;
+    z-index: 1000;
+}
+
+.button-container button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    background: #000;
+    border: none;
+    color: white;
+    border-radius: 4px;
+}
+
+.button-container button:hover {
+    background: #000;
+}
