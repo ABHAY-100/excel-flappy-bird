@@ -41,14 +41,13 @@ SFX_FALL.src = 'audio/sfx_die.wav'
 SFX_SWOOSH.src = 'audio/sfx_swooshing.wav'
 
 gameState = {
-    //loads game on ready screen, tick to change state of game
     current: 0,
-    getReady: 0,
-    //on play game state: bird flaps and flies
-    play: 1,
-    //game over screen: button||click takes player to ready screen
-    gameOver: 2
+    registration: 0,
+    getReady: 1,
+    play: 2,
+    gameOver: 3
 }
+
 //background
 bg = {
     //object's key-value properties pinpointing its location
@@ -653,13 +652,159 @@ gameOver = {
     h:160,
     //object's render function that utilizes all above values to draw image onto canvas
     render: function() {
-        //only draw this if the game state is on game over
         if (gameState.current == gameState.gameOver) {
             ctx.drawImage(theme1, this.imgX,this.imgY,this.width,this.height, this.x,this.y,this.w,this.h)
             description.style.visibility = "visible"
+            
+            // Display leaderboard
+            const scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            ctx.fillStyle = 'black';
+            ctx.font = '15px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Top Scores:', cvs.width/2, this.y + this.h + 30);
+            
+            scores.slice(0, 5).forEach((entry, i) => {
+                ctx.fillText(`${entry.name} (${entry.class}): ${entry.score}`, 
+                    cvs.width/2, this.y + this.h + 50 + (i * 20));
+            });
         }
     }
 }
+
+// Add registration screen object
+const registration = {
+    active: true,
+    render: function() {
+        if (gameState.current === gameState.registration) {
+            // Draw semi-transparent overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+            
+            // Draw registration box
+            ctx.fillStyle = 'white';
+            ctx.fillRect(50, 150, cvs.width - 100, 200);
+            
+            // Draw text
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Enter Your Details', cvs.width/2, 190);
+        }
+    }
+}
+
+// Add leaderboard functionality
+const leaderboard = {
+    scores: [],
+    
+    addScore: function(playerName, playerClass, score) {
+        const entry = {
+            name: playerName,
+            class: playerClass,
+            score: score,
+            date: new Date().toISOString()
+        };
+        
+        // Get existing scores
+        let scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+
+        const existingEntryIndex = scores.findIndex(entry => 
+            entry.name === playerName && entry.class === playerClass
+        );
+        
+        if (existingEntryIndex !== -1) {
+            // If entry exists, update score only if new score is higher
+            if (score > scores[existingEntryIndex].score) {
+                scores[existingEntryIndex].score = score;
+                scores[existingEntryIndex].date = new Date().toISOString();
+            }
+        } else {
+            scores.push(entry);
+        }
+        
+        // Sort by score (highest first)
+        scores.sort((a, b) => b.score - a.score);
+        
+        // Keep only top 10
+        scores = scores.slice(0, 10);
+        
+        // Save back to localStorage
+        localStorage.setItem('leaderboard', JSON.stringify(scores));
+        this.scores = scores;
+    }
+}
+
+// Create and append registration form
+const createRegistrationForm = () => {
+    const form = document.createElement('div');
+    form.id = 'registration-form';
+    form.innerHTML = `
+        <input type="text" id="player-name" placeholder="Your Name" required>
+        <select id="player-class" required>
+
+            <option value="">Select Class</option>
+            <!-- 1st yr -->
+            <option value="CS1A">CS1A</option>
+            <option value="CS1B">CS1B</option>
+            <option value="CS1C">CS1C</option>
+            <option value="CU1">CU1</option>
+            <option value="EC1A">EC1A</option>
+            <option value="EC1B">EC1B</option>
+            <option value="EV1">EV1</option>
+            <option value="ME1">ME1</option>
+            <option value="EB1">EB1</option>
+
+            <!-- 2nd yr -->
+            <option value="CS2A">CS2A</option>
+            <option value="CS2B">CS2B</option>
+            <option value="CS2C">CS2C</option>
+            <option value="CU2">CU2</option>
+            <option value="EC2A">EC2A</option>
+            <option value="EC2B">EC2B</option>
+            <option value="EV2">EV2</option>
+            <option value="ME2">ME2</option>
+            <option value="EB2">EB2</option>
+            <!-- 3rd yr -->
+
+            <option value="CS3A">CS3A</option>
+            <option value="CS3B">CS3B</option>
+            <option value="CS3C">CS3C</option>
+            <option value="CU3">CU3</option>
+            <option value="EC3A">EC3A</option>
+            <option value="EC3B">EC3B</option>
+            <option value="ME3">ME3</option>
+            <option value="EB3">EB3</option>
+            <!-- 4th yr -->
+            <option value="CS4A">CS4A</option>
+            <option value="CS4B">CS4B</option>
+            <option value="EC4A">EC4A</option>
+            <option value="EC4B">EC4B</option>
+            <option value="ME4">ME4</option>
+            <option value="EB4">EB4</option>
+        </select>
+        <button id="start-game">Start Game</button>
+    `;
+    document.body.appendChild(form);
+    
+    // Add event listener to start button
+    document.getElementById('start-game').addEventListener('click', () => {
+        const name = document.getElementById('player-name').value;
+        const playerClass = document.getElementById('player-class').value;
+        
+        if (name && playerClass) {
+            // Store player info
+            localStorage.setItem('currentPlayer', JSON.stringify({
+                name: name,
+                class: playerClass
+            }));
+            
+            // Hide form and start game
+            form.style.display = 'none';
+            gameState.current = gameState.getReady;
+        }
+    });
+}
+
 /************************
 ***** FUNCTIONS: ********
 ************************/
@@ -687,11 +832,17 @@ let update = () => {
 }
 //game looper
 let loop = () => {
-    draw()
-    update()
-    frame++
-    //average of requestAnimationFrame is 50-60fps
-    // requestAnimationFrame(loop)
+    // Only draw and update if we're past registration
+    if (gameState.current !== gameState.registration) {
+        draw()
+        update()
+        frame++
+    } else {
+        // Clear canvas with background color when in registration
+        ctx.fillStyle = '#00bbc4'
+        ctx.fillRect(0, 0, cvs.width, cvs.height)
+        registration.render()
+    }
 }
 loop()
 setInterval(loop, 17)
@@ -701,43 +852,56 @@ setInterval(loop, 17)
 *************************/
 //on mouse click // tap screen
 cvs.addEventListener('click', () => {
-    //if ready screen >> go to play state
-    if (gameState.current == gameState.getReady) {
-        gameState.current = gameState.play
+    switch(gameState.current) {
+        case gameState.gameOver:
+            const player = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (player) {
+                leaderboard.addScore(player.name, player.class, score.current);
+            }
+            pipes.reset();
+            score.reset();
+            gameState.current = gameState.getReady;
+            SFX_SWOOSH.play();
+            break;
+        case gameState.getReady:
+            gameState.current = gameState.play;
+            break;
+        case gameState.play:
+            bird.flap();
+            SFX_FLAP.play();
+            description.style.visibility = "hidden";
+            break;
     }
-    //if play state >> bird keeps flying
-    if (gameState.current == gameState.play) {
-        bird.flap()
-        SFX_FLAP.play()
-        description.style.visibility = "hidden"
-    }
-    //if game over screen >> go to ready screen
-    if (gameState.current == gameState.gameOver) {
-        pipes.reset()
-        score.reset()
-        gameState.current = gameState.getReady
-        SFX_SWOOSH.play()
-    }
-})
+});
 //on spacebar
 document.body.addEventListener('keydown', (e) => {
-    //if ready screen >> go to play state
     if (e.keyCode == 32) {
-        if (gameState.current == gameState.getReady) {
-            gameState.current = gameState.play
-        }
-        //if play state >> bird keeps flying
-        if (gameState.current == gameState.play) {
-            bird.flap()
-            SFX_FLAP.play()
-            description.style.visibility = "hidden"
-        }
-        //if game over screen >> go to ready screen
-        if (gameState.current == gameState.gameOver) {
-            pipes.reset()
-            score.reset()
-            SFX_SWOOSH.play()
-            gameState.current = gameState.getReady
+        switch(gameState.current) {
+            case gameState.gameOver:
+                const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                if (player) {
+                    leaderboard.addScore(player.name, player.class, score.current);
+                }
+                pipes.reset();
+                score.reset();
+                gameState.current = gameState.getReady;
+                SFX_SWOOSH.play();
+                break;
+            case gameState.getReady:
+                gameState.current = gameState.play;
+                break;
+            case gameState.play:
+                bird.flap();
+                SFX_FLAP.play();
+                description.style.visibility = "hidden";
+                break;
         }
     }
-})
+});
+
+// Initialize the game
+window.onload = () => {
+    createRegistrationForm();
+    gameState.current = gameState.registration;
+    loop();
+}
