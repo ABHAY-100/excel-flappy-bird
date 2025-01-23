@@ -644,12 +644,12 @@ gameOver = {
     imgX: 174,
     imgY: 228,
     width: 226,
-    height: 158,
+    height: 40,
     //values for drawing on canvas
     x: cvs.width/2 - 226/2,
-    y: cvs.height/2 - 160,
+    y: cvs.height/2 - 120,
     w: 226,
-    h:160,
+    h: 50,
     //object's render function that utilizes all above values to draw image onto canvas
     render: function() {
         if (gameState.current == gameState.gameOver) {
@@ -664,7 +664,7 @@ gameOver = {
             ctx.fillText('Top Scores:', cvs.width/2, this.y + this.h + 30);
             
             scores.slice(0, 5).forEach((entry, i) => {
-                ctx.fillText(`${entry.name} (${entry.class}): ${entry.score}`, 
+                ctx.fillText(`${entry.name} (${entry.class}): ${   entry.score}`, 
                     cvs.width/2, this.y + this.h + 50 + (i * 20));
             });
         }
@@ -677,18 +677,18 @@ const registration = {
     render: function() {
         if (gameState.current === gameState.registration) {
             // Draw semi-transparent overlay
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(0, 0, cvs.width, cvs.height);
+            // ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            // ctx.fillRect(0, 0, cvs.width, cvs.height);
             
-            // Draw registration box
-            ctx.fillStyle = 'white';
-            ctx.fillRect(50, 150, cvs.width - 100, 200);
+            // // Draw registration box
+            // ctx.fillStyle = 'white';
+            // ctx.fillRect(50, 150, cvs.width - 100, 200);
             
-            // Draw text
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Enter Your Details', cvs.width/2, 190);
+            // // Draw text
+            // ctx.fillStyle = 'black';
+            // ctx.font = '20px Arial';
+            // ctx.textAlign = 'center';
+            // ctx.fillText('Enter Your Details', cvs.width/2, 190);
         }
     }
 }
@@ -741,50 +741,52 @@ const createRegistrationForm = () => {
     form.innerHTML = `
         <input type="text" id="player-name" placeholder="WHO ARE YOU?" required>
         <select id="player-class" required>
+            <option value="">FROM?</option>
 
-            <option value="">FROM WHERE?</option>
-            <!-- 1st yr -->
-            <option value="CS1A">CS1A</option>
-            <option value="CS1B">CS1B</option>
-            <option value="CS1C">CS1C</option>
-            <option value="CU1">CU1</option>
-            <option value="EC1A">EC1A</option>
-            <option value="EC1B">EC1B</option>
-            <option value="EV1">EV1</option>
-            <option value="ME1">ME1</option>
-            <option value="EB1">EB1</option>
-
-            <!-- 2nd yr -->
             <option value="CS2A">CS2A</option>
-            <option value="CS2B">CS2B</option>
-            <option value="CS2C">CS2C</option>
-            <option value="CU2">CU2</option>
-            <option value="EC2A">EC2A</option>
-            <option value="EC2B">EC2B</option>
-            <option value="EV2">EV2</option>
-            <option value="ME2">ME2</option>
-            <option value="EB2">EB2</option>
-            <!-- 3rd yr -->
-
-            <option value="CS3A">CS3A</option>
-            <option value="CS3B">CS3B</option>
-            <option value="CS3C">CS3C</option>
-            <option value="CU3">CU3</option>
-            <option value="EC3A">EC3A</option>
-            <option value="EC3B">EC3B</option>
-            <option value="ME3">ME3</option>
-            <option value="EB3">EB3</option>
-            <!-- 4th yr -->
             <option value="CS4A">CS4A</option>
-            <option value="CS4B">CS4B</option>
-            <option value="EC4A">EC4A</option>
-            <option value="EC4B">EC4B</option>
-            <option value="ME4">ME4</option>
-            <option value="EB4">EB4</option>
+            <option value="CS6A">CS6A</option>
+            <option value="CS8A">CS8A</option>
 
-            <option value="EB4">UNKNOWN!</option>
+            <option value="CS2B">CS2B</option>
+            <option value="CS4B">CS4B</option>
+            <option value="CS6B">CS6B</option>
+            <option value="CS8B">CS8B</option>
+
+            <option value="CS2C">CS2C</option>
+            <option value="CS4C">CS4C</option>
+            <option value="CS6C">CS6C</option>
+            <option value="CS8C">CS8C</option>
+
+            <option value="CU2">CU2</option>
+            <option value="CU4">CU4</option>
+            <option value="CU6">CU6</option>
+
+            <option value="EC2">EC2</option>
+            <option value="EC4">EC4</option>
+            <option value="EC6">EC6</option>
+            <option value="EC8">EC8</option>
+
+            <option value="EV2">EV2</option>
+            <option value="EV4">EV4</option>
+
+            <option value="EE2">EE2</option>
+            <option value="EE4">EE4</option>
+            <option value="EE6">EE6</option>
+            <option value="EE8">EE8</option>
+
+            <option value="ME2">ME2</option>
+            <option value="ME4">ME4</option>
+            <option value="ME6">ME6</option>
+            <option value="ME8">ME8</option>
+
+            <option value="EB2">EB2</option>
+            <option value="EB4">EB4</option>
+            <option value="EB6">EB6</option>
+            <option value="EB8">EB8</option>
         </select>
         <button id="start-game">Start Game</button>
+        <p>Enter Your Details to Continue</p>
         
     `;
     document.body.appendChild(form);
