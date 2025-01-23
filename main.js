@@ -781,8 +781,11 @@ const createRegistrationForm = () => {
             <option value="EC4B">EC4B</option>
             <option value="ME4">ME4</option>
             <option value="EB4">EB4</option>
+
+            <option value="EB4">UNKNOWN!</option>
         </select>
         <button id="start-game">Start Game</button>
+        <p style="color: black; margin: 21px 0;">Aadithya M already exists!...</p>
     `;
     document.body.appendChild(form);
     

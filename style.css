@@ -26,7 +26,7 @@ canvas {
     transform: translate(-50%, -50%);
     background: #00BBC4;
     padding: 20px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     text-align: center;
     height: 100vh;
@@ -50,6 +50,7 @@ canvas {
     max-height: 38px;
     cursor: pointer;
     font: 14px;
+    text-transform: uppercase;
 }
 
 input:focus, input:active, select:focus, select:active {
