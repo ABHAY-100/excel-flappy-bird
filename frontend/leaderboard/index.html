@@ -76,27 +76,30 @@
 
     <script>
       // Function to load and display leaderboard data
-      function displayLeaderboard() {
+      async function displayLeaderboard() {
         const leaderboardBody = document.getElementById("leaderboardBody");
-        let data = JSON.parse(localStorage.getItem("leaderboard")) || [];
+        
+        try {
+          const response = await fetch('/api/scores');
+          const data = await response.json();
 
-        // Sort data by score in descending order
-        data.sort((a, b) => b.score - a.score);
+          // Clear existing table content
+          leaderboardBody.innerHTML = "";
 
-        // Clear existing table content
-        leaderboardBody.innerHTML = "";
-
-        // Populate table with data
-        data.forEach((player, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
+          // Populate table with data
+          data.forEach((player, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
                     <td style="text-transform: uppercase; padding: 12px 13px;">${index + 1}</td>
                     <td style="text-transform: uppercase; padding: 12px 13px;">${player.name}</td>
                     <td style="text-transform: uppercase; padding: 12px 13px;">${player.score}</td>
-                    <td style="text-transform: uppercase; padding: 12px 13px;">${player.class}</td>
+                    <td style="text-transform: uppercase; padding: 12px 13px;">${player.class_name}</td>
                 `;
-          leaderboardBody.appendChild(row);
-        });
+            leaderboardBody.appendChild(row);
+          });
+        } catch (error) {
+          console.error('Error fetching leaderboard data:', error);
+        }
       }
 
       // Load leaderboard when page loads

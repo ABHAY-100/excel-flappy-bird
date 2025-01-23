@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from flaskwebgui import FlaskUI
-from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy import create_engine, Column, Integer, String, Float, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import appdirs
@@ -52,26 +52,38 @@ def save_score():
         session.close()
         return jsonify({'status': 'error', 'message': 'Missing required fields'}), 400
     
-    existing_score = session.query(Score).filter_by(
-        name=data.get('name'),
-        class_name=data.get('class_name')
-    ).first()
-    
-    if existing_score:
-        if data.get('score') > existing_score.score:
-            existing_score.score = data.get('score')
-            session.commit()
-    else:
-        new_score = Score(
+    if data.get('score') == 0:
+        session.close()
+        return jsonify({'status': 'error', 'message': 'Score is 0'}), 400
+
+    try:
+        # Begin transaction explicitly with proper text() wrapper
+        session.execute(text('BEGIN EXCLUSIVE TRANSACTION'))
+        
+        existing_score = session.query(Score).filter_by(
             name=data.get('name'),
-            class_name=data.get('class_name'),
-            score=data.get('score')
-        )
-        session.add(new_score)
+            class_name=data.get('class_name')
+        ).first()
+        
+        if existing_score:
+            if data.get('score') > existing_score.score:
+                existing_score.score = data.get('score')
+        else:
+            new_score = Score(
+                name=data.get('name'),
+                class_name=data.get('class_name'),
+                score=data.get('score')
+            )
+            session.add(new_score)
+            
         session.commit()
-    
-    session.close()
-    return jsonify({'status': 'success'}), 201
+        return jsonify({'status': 'success'}), 201
+        
+    except Exception as e:
+        session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        session.close()
 
 if __name__ == '__main__':
     FlaskUI(app=app, width=1024, height=768, server="flask").run()

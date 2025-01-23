@@ -759,37 +759,25 @@ const leaderboard = {
     addScore: function(playerName, playerClass, score) {
         const entry = {
             name: playerName,
-            class: playerClass,
+            class_name: playerClass,
             score: score,
-            date: new Date().toISOString()
         };
         
-        // Get existing scores
-        let scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-
-        const existingEntryIndex = scores.findIndex(entry => 
-            entry.name === playerName && entry.class === playerClass
-        );
+        fetch('/api/scores', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(entry)
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Score saved successfully:', data);
+          })
+          .catch(error => {
+            console.error('Error saving score:', error);
+          });
         
-        if (existingEntryIndex !== -1) {
-            // If entry exists, update score only if new score is higher
-            if (score > scores[existingEntryIndex].score) {
-                scores[existingEntryIndex].score = score;
-                scores[existingEntryIndex].date = new Date().toISOString();
-            }
-        } else {
-            scores.push(entry);
-        }
-        
-        // Sort by score (highest first)
-        scores.sort((a, b) => b.score - a.score);
-        
-        // Keep only top 10
-        scores = scores.slice(0, 10);
-        
-        // Save back to localStorage
-        localStorage.setItem('leaderboard', JSON.stringify(scores));
-        this.scores = scores;
     }
 }
 
