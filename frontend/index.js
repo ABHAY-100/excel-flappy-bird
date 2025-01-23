@@ -41,11 +41,24 @@ SFX_FALL.src = 'audio/sfx_die.wav'
 SFX_SWOOSH.src = 'audio/sfx_swooshing.wav'
 
 gameState = {
-    current: 0,
+    _current: 0,
     registration: 0,
     getReady: 1,
     play: 2,
-    gameOver: 3
+    gameOver: 3,
+    
+    set current(value) {
+        if (value === this.gameOver && this._current !== this.gameOver) {
+            const player = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (player) {
+                leaderboard.addScore(player.name, player.class, score.current);
+            }
+        }
+        this._current = value;
+    },
+    get current() {
+        return this._current;
+    }
 }
 
 //background
@@ -190,6 +203,10 @@ pipes = {
                     b.bottom > p.top.top) {
                         gameState.current = gameState.gameOver
                         SFX_COLLISION.play()
+                        const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                        if (player) {
+                            leaderboard.addScore(player.name, player.class, score.current);
+                        }
                 }
                 //collision with bottom pipe
                 if (b.left < p.right &&
@@ -198,6 +215,10 @@ pipes = {
                     b.bottom > p.bot.top) {
                         gameState.current = gameState.gameOver
                         SFX_COLLISION.play()
+                        const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                        if (player) {
+                            leaderboard.addScore(player.name, player.class, score.current);
+                        }
                 }
             }
         }
@@ -320,7 +341,12 @@ score = {
 
             //if current score has thousands place value: the game is over
             if (this.current >= 1000) {
-                gameState.current = gameState.gameOver
+                gameState.current = gameState.gameOver;
+                // Add this:
+                const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                if (player) {
+                    leaderboard.addScore(player.name, player.class, score.current);
+                }
             
             //if current score has ones, tens, and hundreds place value only
             } else if (this.current >= 100) {
@@ -436,6 +462,10 @@ bird = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -521,6 +551,10 @@ bird1 = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -608,6 +642,10 @@ bird2 = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -667,6 +705,27 @@ gameOver = {
                 ctx.fillText(`${entry.name} (${entry.class}): ${   entry.score}`, 
                     cvs.width/2, this.y + this.h + 50 + (i * 20));
             });
+
+            (e) => {
+                if (e.keyCode == 32) {
+                    switch(gameState.current) {
+                        case gameState.gameOver:
+                            pipes.reset();
+                            score.reset();
+                            gameState.current = gameState.getReady;
+                            SFX_SWOOSH.play();
+                            break;
+                        case gameState.getReady:
+                            gameState.current = gameState.play;
+                            break;
+                        case gameState.play:
+                            bird.flap();
+                            SFX_FLAP.play();
+                            description.style.visibility = "hidden";
+                            break;
+                    }
+                }
+            }
         }
     }
 }
@@ -784,6 +843,8 @@ const createRegistrationForm = () => {
             <option value="EB4">EB4</option>
             <option value="EB6">EB6</option>
             <option value="EB8">EB8</option>
+
+            <option value="OTHER">OTHER</option>
         </select>
         <button id="start-game">Start Game</button>
         <p>Enter Your Details to Continue</p>
@@ -855,14 +916,10 @@ setInterval(loop, 17)
 /*************************
 ***** EVENT HANDLERS ***** 
 *************************/
-//on mouse click // tap screen
+// on mouse click // tap screen
 cvs.addEventListener('click', () => {
     switch(gameState.current) {
         case gameState.gameOver:
-            const player = JSON.parse(localStorage.getItem('currentPlayer'));
-            if (player) {
-                leaderboard.addScore(player.name, player.class, score.current);
-            }
             pipes.reset();
             score.reset();
             gameState.current = gameState.getReady;
@@ -878,15 +935,12 @@ cvs.addEventListener('click', () => {
             break;
     }
 });
-//on spacebar
+
+// on spacebar
 document.body.addEventListener('keydown', (e) => {
     if (e.keyCode == 32) {
         switch(gameState.current) {
             case gameState.gameOver:
-                const player = JSON.parse(localStorage.getItem('currentPlayer'));
-                if (player) {
-                    leaderboard.addScore(player.name, player.class, score.current);
-                }
                 pipes.reset();
                 score.reset();
                 gameState.current = gameState.getReady;

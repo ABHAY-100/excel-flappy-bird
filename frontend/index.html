@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Project 001</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <canvas id="game" width="300" height="500"></canvas>
-    <div class="button-container">
-        <button onclick="location.reload()">Restart Game</button>
-        <button onclick="window.location.href='./leaderboard'">Leaderboard</button>
+    <div>
+        <!-- <p style="color: black; z-index: 100; position: absolute; bottom: 100px; left: 50%">Tips: Press Space to Restart the Game</p> -->
+        <div class="button-container" style="flex-direction: column; bottom: 0;">
+            <p style="color: black; z-index: 100; margin-bottom: 70px;">Tips: Press Space to Restart the Game</p>
+            <div class="button-container">
+                <button onclick="location.reload()">Restart Game</button>
+                <button onclick="window.location.href='./leaderboard'">Leaderboard</button>
+            </div>
+        </div>
     </div>
     <script src="index.js"></script>
 </body>
+
 </html>
