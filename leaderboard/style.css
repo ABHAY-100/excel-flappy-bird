@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+* {
+  box-sizing: border-box;
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
+body {
+    background-color: #00bbc4;
+}
+
+.backbutton {
+    width: 160px;
+    /* scale: 1 */
+    background: #e86100;
+    border: 2px solid #fff;
+    padding: 8px 18px;
+    margin-top: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    outline: 2px solid #533000;
+}
+
+.textmain {
+    text-shadow: 
+        -2px -2px 0 black,  /* Top-left shadow */
+         1px -1px 0 black,  /* Top-right shadow */
+        -1px  1px 0 black,  /* Bottom-left shadow */
+         1px  1px 0 black;
+}

@@ -1,7 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+* {
+  box-sizing: border-box;
+  font-family: 'Pixelify Sans', sans-serif;
+}
+
 body {
   background-color: rgba(0, 0, 0, 0.95);
   height: 100vh;
   margin: 0;
+  overflow: hidden;
 }
 
 canvas {
@@ -16,54 +24,98 @@ canvas {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: white;
+    background: #00BBC4;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     text-align: center;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 #registration-form input,
 #registration-form select {
     display: block;
-    margin: 10px auto;
+    margin: 8px auto;
     padding: 8px;
     width: 200px;
+    background: #fcb700;
+    border: 2px solid #533847;
+    scale: 1.2;
+    color: #533847;
+    max-height: 38px;
+    cursor: pointer;
+    font: 14px;
+}
+
+input:focus, input:active, select:focus, select:active {
+    background: #fcb700;
+    outline: none;
+}
+
+#registration-form input {
+    padding-left: 12px;
+}
+
+input::placeholder {
+    color: #533847;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    /* padding-left: 4px; */
 }
 
 #registration-form button {
-    background: #00bbc4;
-    border: none;
+    width: 240px;
+    background: #e86100;
+    border: 2px solid #fff;
     padding: 10px 20px;
+    margin-top: 10px;
     color: white;
-    border-radius: 4px;
     cursor: pointer;
+    font-size: 18px;
+    outline: 2px solid #533000;
+}
+
+input:focus, input:active, select:focus, select:active {
+    background: #fcb700;
+    outline: none;
 }
 
 #registration-form button:hover {
-    background: #009aa1;
+    background: #533000;
 }
 
 .button-container {
     position: absolute;
-    top: 20px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
     margin-top: 20px;
     z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }
 
 .button-container button {
-    margin: 0 10px;
-    padding: 10px 20px;
-    cursor: pointer;
-    background: #000;
-    border: none;
+    width: 160px;
+    /* scale: 1 */
+    background: #e86100;
+    border: 2px solid #fff;
+    padding: 8px 18px;
+    margin-top: 10px;
     color: white;
-    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    outline: 2px solid #533000;
 }
 
 .button-container button:hover {
-    background: #000;
+    background: #533000;
 }

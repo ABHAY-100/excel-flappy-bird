@@ -739,10 +739,10 @@ const createRegistrationForm = () => {
     const form = document.createElement('div');
     form.id = 'registration-form';
     form.innerHTML = `
-        <input type="text" id="player-name" placeholder="Your Name" required>
+        <input type="text" id="player-name" placeholder="WHO ARE YOU?" required>
         <select id="player-class" required>
 
-            <option value="">Select Class</option>
+            <option value="">FROM WHERE?</option>
             <!-- 1st yr -->
             <option value="CS1A">CS1A</option>
             <option value="CS1B">CS1B</option>

@@ -1,87 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaderboard</title>
+    <link rel="stylesheet" href="./style.css" />
     <style>
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
+      table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #ffffff;
+        /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); */
+        border: 2px solid #533847;
+      }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        /* border-bottom: 1px solid #ddd; */
+        border-bottom: 2px solid #533847;
+        border-top: 2px solid #533847;
+      }
 
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
+      th {
+        background: #fcb700;
+        color: #533847;
+      }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+      tr:nth-child(even) {
+        background-color: #dddcdc;
+      }
 
-        tr:hover {
-            background-color: #ddd;
-        }
+      tr:hover {
+        background-color: #533847;
+        color: #fff;
+      }
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
     </style>
-</head>
-<body>
-    <button onclick="window.location.href='/'" style="position: absolute; top: 20px; left: 20px; padding: 10px 20px; cursor: pointer; background: #00bbc4; border: none; color: white; border-radius: 4px; z-index: 1000;">Back to Game</button>
-    <h1>Leaderboard</h1>
+  </head>
+
+  <body>
+    <button
+      onclick="window.location.href='/'"
+      style="
+        position: absolute;
+        top: 14px;
+        left: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        "
+      class="backbutton"
+    >
+      <span style="font-size:10px; font-weight: bold;"><</span> BACK TO GAME <span style="font-size:10px; font-weight: bold;">></span>
+    </button>
+    <h1 class="textmain" style="color: #fcb700; font-size: 52px; padding-top: 100px; margin-bottom: 60px;">LEADERBOARD</h1>
     <table id="leaderboardTable">
-        <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>High Score</th>
-                <th>Class</th>
-            </tr>
-        </thead>
-        <tbody id="leaderboardBody">
-        </tbody>
+      <thead>
+        <tr style="font-size: 17px;">
+          <th>RANK</th>
+          <th>NAME</th>
+          <th>HIGH SCORE</th>
+          <th>CLASS</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody"></tbody>
     </table>
 
     <script>
+      // Function to load and display leaderboard data
+      function displayLeaderboard() {
+        const leaderboardBody = document.getElementById("leaderboardBody");
+        let data = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-        // Function to load and display leaderboard data
-        function displayLeaderboard() {
-            const leaderboardBody = document.getElementById('leaderboardBody');
-            let data = JSON.parse(localStorage.getItem('leaderboard')) || [];
-            
-            // Sort data by score in descending order
-            data.sort((a, b) => b.score - a.score);
+        // Sort data by score in descending order
+        data.sort((a, b) => b.score - a.score);
 
-            // Clear existing table content
-            leaderboardBody.innerHTML = '';
+        // Clear existing table content
+        leaderboardBody.innerHTML = "";
 
-            // Populate table with data
-            data.forEach((player, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${player.name}</td>
-                    <td>${player.score}</td>
-                    <td>${player.class}</td>
+        // Populate table with data
+        data.forEach((player, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td style="text-transform: uppercase; padding: 12px 13px;">${index + 1}</td>
+                    <td style="text-transform: uppercase; padding: 12px 13px;">${player.name}</td>
+                    <td style="text-transform: uppercase; padding: 12px 13px;">${player.score}</td>
+                    <td style="text-transform: uppercase; padding: 12px 13px;">${player.class}</td>
                 `;
-                leaderboardBody.appendChild(row);
-            });
-        }
+          leaderboardBody.appendChild(row);
+        });
+      }
 
-        // Load leaderboard when page loads
-        window.onload = displayLeaderboard;
+      // Load leaderboard when page loads
+      window.onload = displayLeaderboard;
     </script>
-</body>
-</html> 
+  </body>
+</html>
