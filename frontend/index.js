@@ -848,6 +848,7 @@ const createRegistrationForm = () => {
         </select>
         <button id="start-game">Start Game</button>
         <p>Enter Your Details to Continue</p>
+        <a onclick="window.location.href='../'" style="margin-top: 10px; color:rgb(121, 37, 37); font-size: 19px; text-decoration-line: underline;">Go Back</a>
         
     `;
     document.body.appendChild(form);
