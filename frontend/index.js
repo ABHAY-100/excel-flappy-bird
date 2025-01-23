@@ -41,11 +41,24 @@ SFX_FALL.src = 'audio/sfx_die.wav'
 SFX_SWOOSH.src = 'audio/sfx_swooshing.wav'
 
 gameState = {
-    current: 0,
+    _current: 0,
     registration: 0,
     getReady: 1,
     play: 2,
-    gameOver: 3
+    gameOver: 3,
+    
+    set current(value) {
+        if (value === this.gameOver && this._current !== this.gameOver) {
+            const player = JSON.parse(localStorage.getItem('currentPlayer'));
+            if (player) {
+                leaderboard.addScore(player.name, player.class, score.current);
+            }
+        }
+        this._current = value;
+    },
+    get current() {
+        return this._current;
+    }
 }
 
 //background
@@ -190,6 +203,10 @@ pipes = {
                     b.bottom > p.top.top) {
                         gameState.current = gameState.gameOver
                         SFX_COLLISION.play()
+                        const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                        if (player) {
+                            leaderboard.addScore(player.name, player.class, score.current);
+                        }
                 }
                 //collision with bottom pipe
                 if (b.left < p.right &&
@@ -198,6 +215,10 @@ pipes = {
                     b.bottom > p.bot.top) {
                         gameState.current = gameState.gameOver
                         SFX_COLLISION.play()
+                        const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                        if (player) {
+                            leaderboard.addScore(player.name, player.class, score.current);
+                        }
                 }
             }
         }
@@ -320,7 +341,12 @@ score = {
 
             //if current score has thousands place value: the game is over
             if (this.current >= 1000) {
-                gameState.current = gameState.gameOver
+                gameState.current = gameState.gameOver;
+                // Add this:
+                const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                if (player) {
+                    leaderboard.addScore(player.name, player.class, score.current);
+                }
             
             //if current score has ones, tens, and hundreds place value only
             } else if (this.current >= 100) {
@@ -363,9 +389,9 @@ bird = {
     //bird's radius
     r: 12,
     //how much the bird flies per flap()
-    fly: 5.25,
+    fly: 4.6,
     //gravity increments the velocity per frame
-    gravity: .32,
+    gravity: 0.25,
     //velocity = pixels the bird will drop in a frame
     velocity: 0,
     //object's render function that utilizes all above values to draw image onto canvas
@@ -436,6 +462,10 @@ bird = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -521,6 +551,10 @@ bird1 = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -608,6 +642,10 @@ bird2 = {
                 if (gameState.current == gameState.play) {
                     gameState.current = gameState.gameOver
                     SFX_FALL.play()
+                    const player = JSON.parse(localStorage.getItem('currentPlayer'));
+                    if (player) {
+                        leaderboard.addScore(player.name, player.class, score.current);
+                    }
                 }
             }
             
@@ -644,12 +682,12 @@ gameOver = {
     imgX: 174,
     imgY: 228,
     width: 226,
-    height: 158,
+    height: 40,
     //values for drawing on canvas
     x: cvs.width/2 - 226/2,
-    y: cvs.height/2 - 160,
+    y: cvs.height/2 - 120,
     w: 226,
-    h:160,
+    h: 50,
     //object's render function that utilizes all above values to draw image onto canvas
     render: function() {
         if (gameState.current == gameState.gameOver) {
@@ -664,9 +702,30 @@ gameOver = {
             ctx.fillText('Top Scores:', cvs.width/2, this.y + this.h + 30);
             
             scores.slice(0, 5).forEach((entry, i) => {
-                ctx.fillText(`${entry.name} (${entry.class}): ${entry.score}`, 
+                ctx.fillText(`${entry.name} (${entry.class}): ${   entry.score}`, 
                     cvs.width/2, this.y + this.h + 50 + (i * 20));
             });
+
+            (e) => {
+                if (e.keyCode == 32) {
+                    switch(gameState.current) {
+                        case gameState.gameOver:
+                            pipes.reset();
+                            score.reset();
+                            gameState.current = gameState.getReady;
+                            SFX_SWOOSH.play();
+                            break;
+                        case gameState.getReady:
+                            gameState.current = gameState.play;
+                            break;
+                        case gameState.play:
+                            bird.flap();
+                            SFX_FLAP.play();
+                            description.style.visibility = "hidden";
+                            break;
+                    }
+                }
+            }
         }
     }
 }
@@ -677,18 +736,18 @@ const registration = {
     render: function() {
         if (gameState.current === gameState.registration) {
             // Draw semi-transparent overlay
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(0, 0, cvs.width, cvs.height);
+            // ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            // ctx.fillRect(0, 0, cvs.width, cvs.height);
             
-            // Draw registration box
-            ctx.fillStyle = 'white';
-            ctx.fillRect(50, 150, cvs.width - 100, 200);
+            // // Draw registration box
+            // ctx.fillStyle = 'white';
+            // ctx.fillRect(50, 150, cvs.width - 100, 200);
             
-            // Draw text
-            ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Enter Your Details', cvs.width/2, 190);
+            // // Draw text
+            // ctx.fillStyle = 'black';
+            // ctx.font = '20px Arial';
+            // ctx.textAlign = 'center';
+            // ctx.fillText('Enter Your Details', cvs.width/2, 190);
         }
     }
 }
@@ -700,37 +759,25 @@ const leaderboard = {
     addScore: function(playerName, playerClass, score) {
         const entry = {
             name: playerName,
-            class: playerClass,
+            class_name: playerClass,
             score: score,
-            date: new Date().toISOString()
         };
         
-        // Get existing scores
-        let scores = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-
-        const existingEntryIndex = scores.findIndex(entry => 
-            entry.name === playerName && entry.class === playerClass
-        );
+        fetch('/api/scores', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(entry)
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Score saved successfully:', data);
+          })
+          .catch(error => {
+            console.error('Error saving score:', error);
+          });
         
-        if (existingEntryIndex !== -1) {
-            // If entry exists, update score only if new score is higher
-            if (score > scores[existingEntryIndex].score) {
-                scores[existingEntryIndex].score = score;
-                scores[existingEntryIndex].date = new Date().toISOString();
-            }
-        } else {
-            scores.push(entry);
-        }
-        
-        // Sort by score (highest first)
-        scores.sort((a, b) => b.score - a.score);
-        
-        // Keep only top 10
-        scores = scores.slice(0, 10);
-        
-        // Save back to localStorage
-        localStorage.setItem('leaderboard', JSON.stringify(scores));
-        this.scores = scores;
     }
 }
 
@@ -741,50 +788,55 @@ const createRegistrationForm = () => {
     form.innerHTML = `
         <input type="text" id="player-name" placeholder="WHO ARE YOU?" required>
         <select id="player-class" required>
+            <option value="">FROM?</option>
 
-            <option value="">FROM WHERE?</option>
-            <!-- 1st yr -->
-            <option value="CS1A">CS1A</option>
-            <option value="CS1B">CS1B</option>
-            <option value="CS1C">CS1C</option>
-            <option value="CU1">CU1</option>
-            <option value="EC1A">EC1A</option>
-            <option value="EC1B">EC1B</option>
-            <option value="EV1">EV1</option>
-            <option value="ME1">ME1</option>
-            <option value="EB1">EB1</option>
-
-            <!-- 2nd yr -->
             <option value="CS2A">CS2A</option>
-            <option value="CS2B">CS2B</option>
-            <option value="CS2C">CS2C</option>
-            <option value="CU2">CU2</option>
-            <option value="EC2A">EC2A</option>
-            <option value="EC2B">EC2B</option>
-            <option value="EV2">EV2</option>
-            <option value="ME2">ME2</option>
-            <option value="EB2">EB2</option>
-            <!-- 3rd yr -->
-
-            <option value="CS3A">CS3A</option>
-            <option value="CS3B">CS3B</option>
-            <option value="CS3C">CS3C</option>
-            <option value="CU3">CU3</option>
-            <option value="EC3A">EC3A</option>
-            <option value="EC3B">EC3B</option>
-            <option value="ME3">ME3</option>
-            <option value="EB3">EB3</option>
-            <!-- 4th yr -->
             <option value="CS4A">CS4A</option>
-            <option value="CS4B">CS4B</option>
-            <option value="EC4A">EC4A</option>
-            <option value="EC4B">EC4B</option>
-            <option value="ME4">ME4</option>
-            <option value="EB4">EB4</option>
+            <option value="CS6A">CS6A</option>
+            <option value="CS8A">CS8A</option>
 
-            <option value="EB4">UNKNOWN!</option>
+            <option value="CS2B">CS2B</option>
+            <option value="CS4B">CS4B</option>
+            <option value="CS6B">CS6B</option>
+            <option value="CS8B">CS8B</option>
+
+            <option value="CS2C">CS2C</option>
+            <option value="CS4C">CS4C</option>
+            <option value="CS6C">CS6C</option>
+            <option value="CS8C">CS8C</option>
+
+            <option value="CU2">CU2</option>
+            <option value="CU4">CU4</option>
+            <option value="CU6">CU6</option>
+
+            <option value="EC2">EC2</option>
+            <option value="EC4">EC4</option>
+            <option value="EC6">EC6</option>
+            <option value="EC8">EC8</option>
+
+            <option value="EV2">EV2</option>
+            <option value="EV4">EV4</option>
+
+            <option value="EE2">EE2</option>
+            <option value="EE4">EE4</option>
+            <option value="EE6">EE6</option>
+            <option value="EE8">EE8</option>
+
+            <option value="ME2">ME2</option>
+            <option value="ME4">ME4</option>
+            <option value="ME6">ME6</option>
+            <option value="ME8">ME8</option>
+
+            <option value="EB2">EB2</option>
+            <option value="EB4">EB4</option>
+            <option value="EB6">EB6</option>
+            <option value="EB8">EB8</option>
+
+            <option value="OTHER">OTHER</option>
         </select>
         <button id="start-game">Start Game</button>
+        <p>Enter Your Details to Continue</p>
+        <a onclick="window.location.href='../'" style="margin-top: 10px; color:rgb(121, 37, 37); font-size: 19px; text-decoration-line: underline; cursor: pointer">Go Back</a>
         
     `;
     document.body.appendChild(form);
@@ -853,16 +905,13 @@ setInterval(loop, 17)
 /*************************
 ***** EVENT HANDLERS ***** 
 *************************/
-//on mouse click // tap screen
+// on mouse click // tap screen
 cvs.addEventListener('click', () => {
     switch(gameState.current) {
         case gameState.gameOver:
-            const player = JSON.parse(localStorage.getItem('currentPlayer'));
-            if (player) {
-                leaderboard.addScore(player.name, player.class, score.current);
-            }
             pipes.reset();
             score.reset();
+            bird.velocity = 0;
             gameState.current = gameState.getReady;
             SFX_SWOOSH.play();
             break;
@@ -876,17 +925,15 @@ cvs.addEventListener('click', () => {
             break;
     }
 });
-//on spacebar
+
+// on spacebar
 document.body.addEventListener('keydown', (e) => {
     if (e.keyCode == 32) {
         switch(gameState.current) {
             case gameState.gameOver:
-                const player = JSON.parse(localStorage.getItem('currentPlayer'));
-                if (player) {
-                    leaderboard.addScore(player.name, player.class, score.current);
-                }
                 pipes.reset();
                 score.reset();
+                bird.velocity = 0;
                 gameState.current = gameState.getReady;
                 SFX_SWOOSH.play();
                 break;
