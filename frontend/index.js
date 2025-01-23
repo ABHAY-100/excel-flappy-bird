@@ -389,9 +389,9 @@ bird = {
     //bird's radius
     r: 12,
     //how much the bird flies per flap()
-    fly: 5.25,
+    fly: 4.6,
     //gravity increments the velocity per frame
-    gravity: .32,
+    gravity: 0.25,
     //velocity = pixels the bird will drop in a frame
     velocity: 0,
     //object's render function that utilizes all above values to draw image onto canvas
@@ -923,6 +923,7 @@ cvs.addEventListener('click', () => {
         case gameState.gameOver:
             pipes.reset();
             score.reset();
+            bird.velocity = 0;
             gameState.current = gameState.getReady;
             SFX_SWOOSH.play();
             break;
@@ -944,6 +945,7 @@ document.body.addEventListener('keydown', (e) => {
             case gameState.gameOver:
                 pipes.reset();
                 score.reset();
+                bird.velocity = 0;
                 gameState.current = gameState.getReady;
                 SFX_SWOOSH.play();
                 break;
